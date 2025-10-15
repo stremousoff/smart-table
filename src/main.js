@@ -48,8 +48,12 @@ const applySorting = initSorting([
 // Поиск
 const applySearching = initSearching('search');
 
-// Фильтрация
-// const {applyFiltering, updateIndexes} = initFiltering(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
+//Фильтрация
+const { applyFiltering, updateIndexes } = initFiltering(sampleTable.filter.elements);
+
+// позже обновляем индексы
+const indexes = await api.getIndexes();
+updateIndexes(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
 
 
 // collectState: собираем состояние таблицы
@@ -81,14 +85,9 @@ async function render(action) {
   sampleTable.render(items);
 }
 
-let applyFiltering;
-let updateIndexes;
-
 // Инициализация фильтров после получения индексов
 const init = async () => {
   const indexes = await api.getIndexes();
-  // const {applyFiltering, updateIndexes} = initFiltering(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
-  ({ applyFiltering, updateIndexes } = initFiltering(sampleTable.filter.elements));
   updateIndexes(sampleTable.filter.elements, {
     searchBySeller: indexes.sellers
   });
