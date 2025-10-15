@@ -48,6 +48,10 @@ const applySorting = initSorting([
 // Поиск
 const applySearching = initSearching('search');
 
+// Фильтрация
+// const {applyFiltering, updateIndexes} = initFiltering(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
+
+
 // collectState: собираем состояние таблицы
 const collectState = () => {
   const state = processFormData(new FormData(sampleTable.container));
@@ -63,18 +67,32 @@ async function render(action) {
   const state = collectState();
   let query = {};
 
-  // Применяем пагинацию, сортировку, поиск
+  // Применяем поиск, фильтрацию, сортировку и пагинацию в правильном порядке:
+  query = applySearching(query, state, action);
+  query = applyFiltering(query, state, action);
+  query = applySorting(query, state, action);
   query = applyPagination(query, state, action);
+
+  // Теперь получаем уже отфильтрованные данные
   const { total, items } = await api.getRecords(query);
 
+  // Обновляем пагинацию и отрисовываем таблицу
   updatePagination(total, query);
   sampleTable.render(items);
 }
 
+let applyFiltering;
+let updateIndexes;
+
 // Инициализация фильтров после получения индексов
 const init = async () => {
   const indexes = await api.getIndexes();
-  // applyFiltering = initFiltering(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
+  // const {applyFiltering, updateIndexes} = initFiltering(sampleTable.filter.elements, { searchBySeller: indexes.sellers });
+  ({ applyFiltering, updateIndexes } = initFiltering(sampleTable.filter.elements));
+  updateIndexes(sampleTable.filter.elements, {
+    searchBySeller: indexes.sellers
+  });
+
 };
 
 // Монтируем таблицу и запускаем
