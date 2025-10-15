@@ -1,8 +1,6 @@
 import './fonts/ys-display/fonts.css';
 import './style.css';
 
-import { data as sourceData } from "./data/dataset_1.js";
-
 import { initData } from "./data.js";
 import { processFormData } from "./lib/utils.js";
 
@@ -13,14 +11,14 @@ import { initFiltering } from "./components/filtering.js";
 import { initSearching } from "./components/searching.js";
 
 // API
-const api = initData(sourceData);
+const api = initData();
 
 // Инициализация таблицы
 const sampleTable = initTable(
   {
     tableTemplate: 'table',
     rowTemplate: 'row',
-    before: ['header', 'filter', 'search'],
+    before: ['search', 'header', 'filter'],
     after: ['pagination'],
   },
   render
